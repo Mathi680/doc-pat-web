@@ -1,0 +1,250 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "handwritten ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "medical report",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b50f3ab0-7c95-499b-b14e-27ffbe2931de",
+      "name": "On form submission",
+      "webhookId": "96b0bd2e-a537-48f3-8298-44a93f453bb4"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "analyze the given input binary image and extract the inofrmation and givre it in formatted output\niinput feilds:\nimage:medical_report",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "5ed2f4a7-9ceb-4896-9a4f-56ff1455fe0a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        400,
+        280
+      ],
+      "id": "3cdfe0cc-1553-4ac5-bb8a-bebc2d0ec897",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jv9UQ9Akwiqu91Ac",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.output }}",
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"patient_info\": {\n    \"name\": \"string\",\n    \"phone\": \"string\",\n    \"address\": \"string\",\n    \"consultation_date\": \"YYYY-MM-DD\"\n  },\n  \"diagnosis\": [\n    \"string\"\n  ],\n  \"medical_history\": {\n    \"occupation\": \"string\",\n    \"work_posture\": \"string\",\n    \"repetitive_movements\": \"string | null\",\n    \"height_m\": \"float\",\n    \"weight_kg\": \"float\",\n    \"hobbies\": \"string | null\",\n    \"investigations\": [\n      \"string\"\n    ],\n    \"investigation_results\": \"string | null\"\n  },\n  \"clinical_examination\": {\n    \"symptoms\": [\n      \"string\"\n    ],\n    \"findings\": \"string | null\"\n  },\n  \"notes\": \"string | null\"\n}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        0
+      ],
+      "id": "0527c567-f13f-4f69-9046-f0dcc73aec1e",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst sheets = items.map((item) => {\n  return {\n    patient_name: item?.json?.output?.patient_name,\n    phone_number: item?.json?.output?.phone_number,\n    address: item?.json?.output?.address,\n    diagnoses: Array.isArray(item?.json?.output?.diagnoses) ? item.json.output.diagnoses.join(\", \") : \"\",\n    occupation: item?.json?.output?.occupation,\n    work_posture: item?.json?.output?.work_posture,\n    height: item?.json?.output?.height,\n    weight: item?.json?.output?.weight,\n    clinical_examination: item?.json?.output?.clinical_examination,\n  };\n});\nreturn sheets.map(sheet => ({ json: sheet }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        920,
+        0
+      ],
+      "id": "d0d8e10f-93fa-486a-8ef5-cfbc35104e96",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1gzMX8_g7r5NIAQ4kMSoGKA6w1AZzajUwOUmjVomFzGc",
+          "mode": "list",
+          "cachedResultName": "new work flow ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gzMX8_g7r5NIAQ4kMSoGKA6w1AZzajUwOUmjVomFzGc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gzMX8_g7r5NIAQ4kMSoGKA6w1AZzajUwOUmjVomFzGc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "diagnoses": "={{ $json.diagnoses }}",
+            "occupation": "={{ $json.occupation }}",
+            "work_posture": "={{ $json.work_posture }}",
+            "clinical_examination": "={{ $json.clinical_examination }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "diagnoses",
+              "displayName": "diagnoses",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "occupation",
+              "displayName": "occupation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "work_posture",
+              "displayName": "work_posture",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "clinical_examination",
+              "displayName": "clinical_examination",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1140,
+        0
+      ],
+      "id": "3eaf634c-9fc6-4d29-b995-58696386a355",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BejS5lss2LoAVt0a",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f687d4d6-a07a-4597-a69d-dc619afd9087",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ed3e5d7736290f1f520e455c510d7ca5cf5f6f4699bdb25ace1b169ba7c7417e"
+  },
+  "id": "CqXXIwFfQbI75UUu",
+  "tags": []
+}
