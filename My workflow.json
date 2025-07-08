@@ -1,0 +1,302 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7e7d1455-a6dd-425a-972a-084ef2f96838",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1uMffeZj_bbBANz1nHAwVAkz90jk5ZMmtXH9rYmfRZ9A",
+          "mode": "list",
+          "cachedResultName": "aol",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uMffeZj_bbBANz1nHAwVAkz90jk5ZMmtXH9rYmfRZ9A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uMffeZj_bbBANz1nHAwVAkz90jk5ZMmtXH9rYmfRZ9A/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        360,
+        220
+      ],
+      "id": "6125d0d6-a6b2-4353-afd4-301bbb56675d",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BejS5lss2LoAVt0a",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=act as a data analyst and organise the data based on visiting date and generate it in form of  professional mail and more simple and short and without any highlight,dont use bold font or icons , from{{ $json.text }}",
+        "options": {
+          "systemMessage": "You are a helpful assistant"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1220,
+        220
+      ],
+      "id": "d6a8d4ae-6462-4319-bccd-8b56ac8d6aeb",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        440
+      ],
+      "id": "93f6ed31-f057-498c-ac10-1e2f0dcb8b44",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jv9UQ9Akwiqu91Ac",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map((item) => item.json);\nconst text = rows.map((row) => Object.values(row).join(\" \")).join(\"\\n\");\n\nreturn { text };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        580,
+        220
+      ],
+      "id": "2d04fc0d-4872-4f8b-80c1-a1e47baa88da",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "sivashankar1361@gmail.com",
+        "subject": "Report",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1600,
+        220
+      ],
+      "id": "3597346f-2efe-4cc8-8656-fcf1d64c70b6",
+      "name": "Send a message",
+      "webhookId": "b3b0673a-8f86-436a-8a5f-0ba74f286340",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "qUOcBcLnmhaFPu1v",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "= check if the person with same name has more than one diseases, and generate a professional mail as to not undergo different treatment at same time dont be interactive and more simple and short, from  {{ $json.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        860,
+        40
+      ],
+      "id": "18794c6b-6172-42dc-afe1-d90cd3d05328",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        740,
+        140
+      ],
+      "id": "713c7916-6cb8-444e-9abc-6ca74fe4e480",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jv9UQ9Akwiqu91Ac",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "kabindrabohara1@gmail.com",
+        "subject": "=Important Information Regarding Your Treatment Plan ",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1220,
+        40
+      ],
+      "id": "023a6771-d89f-4804-ba2b-a23b9c45fae5",
+      "name": "Send a message1",
+      "webhookId": "68ceb978-dd81-454e-9831-5479cb107bd4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "qUOcBcLnmhaFPu1v",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map((item) => item.json);\nconst text = rows.map((row) => Object.values(row).join(\", \")).join(\"\\n\");\n\nreturn { text };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        40
+      ],
+      "id": "59a6aab9-5b0a-4291-a175-7336173debca",
+      "name": "Code1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "198e6d93-acd5-4ae9-b333-71abf0a4f5ac",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ed3e5d7736290f1f520e455c510d7ca5cf5f6f4699bdb25ace1b169ba7c7417e"
+  },
+  "id": "znLthmcPbCgwYwXy",
+  "tags": []
+}
